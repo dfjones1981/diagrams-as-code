@@ -1,0 +1,40 @@
+@startuml "Example C4 Azure"
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+!include azurepuml/AzureCommon.puml
+!include azurepuml/AzureC4Integration.puml
+
+!include azurepuml/Identity/AzureActiveDirectory.puml
+
+!include AzurePuml/Networking/AzureDNS.puml
+!include AzurePuml/Web/AzureWebApp.puml
+!include AzurePuml/Databases/AzureRedisCache.puml
+!include AzurePuml/Databases/AzureSqlDatabase.puml
+!include AzurePuml/Web/AzureCDN.puml
+!include AzurePuml/Storage/AzureBlobStorage.puml
+
+Container(internet, "Internet", "")
+AzureDNS(dns, "Hosting Service", "name resolution")
+AzureActiveDirectory(aad, "Authentication Service", "Single Sign on, multifactor")
+System_Boundary(rg, "Resource Group") {
+    AzureCDN(cdn, "Akamai S2", "caches publicly available content for lower latency and faster delivery of content")
+    AzureBlobStorage(blob, "Static Content", "General Purpose v2, Hot, LRS")
+    AzureDNS(frontDoor, "API Gateway", "load balancing, rate limiting")
+    AzureWebApp(webApp, "Web and API App", ".net 6, C#")
+    AzureRedisCache(redis, "Cache", "Standard C2")
+    AzureSqlDatabase(sql, "SQL DB", "Standard S3")
+}
+
+Rel_U(internet, aad, "authenticates")
+Rel_D(internet, dns, "resolves")
+Rel_R(internet, frontDoor, "requests")
+Rel_R(internet, cdn, "requests")
+Rel_R(frontDoor, webApp, "forwards")
+Rel_L(redis, webApp, "reads")
+Rel_L(sql, redis, "updates")
+Rel_L(blob, cdn, "updates")
+
+Lay_D(frontDoor, cdn)
+Lay_L(internet, frontDoor)
+
+@enduml

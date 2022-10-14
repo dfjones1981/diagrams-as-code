@@ -1,0 +1,76 @@
+!define table(x) class x << (T,mistyrose) >> 
+!define view(x) class x << (V,lightblue) >> 
+!define table(x) class x << (T,mistyrose) >> 
+!define tr(x) class x << (R,red) >> 
+!define tf(x) class x << (F,darkorange) >> 
+!define af(x) class x << (F,white) >> 
+!define fn(x) class x << (F,plum) >> 
+!define fs(x) class x << (F,tan) >> 
+!define ft(x) class x << (F,wheat) >> 
+!define if(x) class x << (F,gaisboro) >> 
+!define p(x) class x << (P,indianred) >> 
+!define pc(x) class x << (P,lemonshiffon) >> 
+!define x(x) class x << (P,linen) >>
+ 
+hide methods 
+hide stereotypes 
+skinparam classarrowcolor gray
+ 
+table(HumanResources.Employee) {
+BusinessEntityID: int <<pk>> <<fk>>
+NationalIDNumber: nvarchar
+LoginID: nvarchar
+OrganizationNode: hierarchyid
+OrganizationLevel: smallint
+JobTitle: nvarchar
+BirthDate: date
+MaritalStatus: nchar
+Gender: nchar
+HireDate: date
+SalariedFlag: Flag
+VacationHours: smallint
+SickLeaveHours: smallint
+CurrentFlag: Flag
+rowguid: uniqueidentifier
+ModifiedDate: datetime
+__ trigger __
+dEmployee
+}
+table(Person.Person) {
+BusinessEntityID: int <<pk>> <<fk>>
+PersonType: nchar <<fk>>
+NameStyle: NameStyle
+Title: nvarchar
+FirstName: Name
+MiddleName: Name
+LastName: Name
+Suffix: nvarchar
+EmailPromotion: int
+AdditionalContactInfo: xml
+Demographics: xml
+rowguid: uniqueidentifier
+ModifiedDate: datetime
+__ trigger __
+iuPerson
+}
+view(HumanResources.vEmployeeDepartmentHistory) {
+BusinessEntityID: int
+Title: nvarchar
+FirstName: Name
+MiddleName: Name
+LastName: Name
+Suffix: nvarchar
+Shift: Name
+Department: Name
+GroupName: Name
+StartDate: date
+EndDate: date
+}
+tf(dbo.ufnGetContactInformation) {
+@PersonID: int
+}
+dbo.ufnGetContactInformation -|> HumanResources.Employee:References
+dbo.ufnGetContactInformation -|> Person.Person:References
+HumanResources.vEmployeeDepartmentHistory -|> HumanResources.Employee:References
+HumanResources.vEmployeeDepartmentHistory -|> Person.Person:References
+HumanResources.Employee -|> Person.Person:FK

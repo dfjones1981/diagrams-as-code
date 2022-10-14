@@ -1,0 +1,22 @@
+@startuml "Example"
+
+skinparam componentStyle rectangle
+
+package "Resource Group" {
+  [Azure Front Door] -right-> [Web App]
+  [Azure Front Door] -[hidden]-> [Azure CDN]
+  [Redis Cache] -left-> [Web App]
+  [Azure SQL Database] -left-> [Redis Cache]
+  [Blob Storage] -left-> [Azure CDN]
+}
+
+cloud {
+  [Internet]
+}
+
+[Internet] .up-> [AAD] : Auth
+[Internet] -down-> [Azure DNS]
+[Internet] -left-> [Azure Front Door]
+[Internet] -left-> [Azure CDN]
+
+@enduml

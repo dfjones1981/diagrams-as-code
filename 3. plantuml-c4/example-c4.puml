@@ -1,0 +1,28 @@
+@startuml "Example C4"
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Container(aad, "Azure Active Directory")
+Container(dns, "Azure DNS")
+Container(internet, "Internet")
+
+System_Boundary(rg, "Resource Group") {
+    Container(frontDoor, "Azure Front Door")
+    Container(webApp, "Web App")
+    Container(redis, "Redis Cache")
+    Container(sql, "Azure SQL Database")
+    Container(cdn, "Azure CDN")
+    Container(blob, "Blob Storage")
+}
+
+Rel_U(internet, aad, "authenticates")
+Rel_D(internet, dns, "resolves")
+Rel_R(internet, frontDoor, "requests")
+Rel_R(internet, cdn, "requests")
+Rel_R(frontDoor, webApp, "forwards")
+Rel_L(redis, webApp, "reads")
+Rel_L(sql, redis, "updates")
+Rel_L(blob, cdn, "updates")
+
+Lay_D(frontDoor, cdn)
+
+@enduml
